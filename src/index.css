@@ -27,15 +27,16 @@ body {
   height: 100%;
   overflow: hidden;
   pointer-events: none;
+  z-index: 1;
 }
 
 .snowflake {
   position: absolute;
   top: -10px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1em;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9em;
   font-family: Arial;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
   animation: snowfall linear infinite;
   pointer-events: none;
 }
@@ -93,9 +94,18 @@ body {
   }
 }
 
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+/* Fade-in animation for page transitions */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out;
 }

@@ -1,4 +1,36 @@
-# React + TypeScript + Vite
+# Christmas List
+
+A React + TypeScript + Vite application for managing Christmas wish lists.
+
+## GitHub Pages Deployment
+
+This project is configured for GitHub Pages deployment. There are two ways to deploy:
+
+### Automatic Deployment (Recommended)
+
+The project includes a GitHub Actions workflow that automatically deploys to GitHub Pages whenever you push to the `main` branch. 
+
+**First-time setup:**
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Pages**
+3. Under **Source**, select **GitHub Actions**
+4. The workflow will automatically run on the next push to `main`
+
+### Manual Deployment
+
+You can also deploy manually using:
+
+```bash
+npm run deploy
+```
+
+This will build the project and push it to the `gh-pages` branch.
+
+**Note:** Make sure the `base` path in `vite.config.ts` matches your repository name. Currently set to `/christmas-list/`.
+
+---
+
+## Development
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

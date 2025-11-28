@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import type { WishItem } from '../types/wishItem';
+import Card from './Card';
+import GradientButton from './GradientButton';
 
 interface AddWishFormProps {
   onAdd: (item: WishItem) => void;
@@ -33,57 +35,104 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
     }
   };
 
+  const imageUrl = image.trim();
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white rounded-xl p-5 mb-6 border-2 border-red-300 shadow-md"
-    >
-      <div className="space-y-3">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title *"
-          className="w-full px-3 py-2 border-2 border-red-300 rounded-md focus:outline-none focus:border-red-500"
-          required
-        />
-        <input
-          type="url"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder="Link (optional)"
-          className="w-full px-3 py-2 border-2 border-red-300 rounded-md focus:outline-none focus:border-red-500"
-        />
-        <input
-          type="text"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="Price (optional)"
-          className="w-full px-3 py-2 border-2 border-red-300 rounded-md focus:outline-none focus:border-red-500"
-        />
-        <input
-          type="url"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          placeholder="Image URL (optional)"
-          className="w-full px-3 py-2 border-2 border-red-300 rounded-md focus:outline-none focus:border-red-500"
-        />
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Notes (optional)"
-          className="w-full px-3 py-2 border-2 border-red-300 rounded-md focus:outline-none focus:border-red-500"
-          rows={3}
-        />
-        <button
-          type="submit"
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-green-500 text-white font-semibold rounded-md hover:from-red-600 hover:to-green-600 transition-all duration-200 shadow-md hover:shadow-lg"
-        >
-          <Plus className="w-5 h-5" />
-          Add Wish Item
-        </button>
-      </div>
-    </form>
+    <Card className="p-6 sm:p-8 mb-6">
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-4 sm:space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Title *
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter wish item title"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 dark:bg-slate-700/50 dark:text-gray-100 dark:placeholder-gray-400 transition-all duration-200"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Link (optional)
+            </label>
+            <input
+              type="url"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder="https://example.com"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 dark:bg-slate-700/50 dark:text-gray-100 dark:placeholder-gray-400 transition-all duration-200"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Price (optional)
+            </label>
+            <input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="e.g., $29.99"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 dark:bg-slate-700/50 dark:text-gray-100 dark:placeholder-gray-400 transition-all duration-200"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Image URL (optional)
+            </label>
+            <input
+              type="url"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 dark:bg-slate-700/50 dark:text-gray-100 dark:placeholder-gray-400 transition-all duration-200"
+            />
+            {imageUrl && (
+              <div className="mt-3">
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
+                <div className="relative w-full h-48 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <img
+                    src={imageUrl}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      const parent = (e.target as HTMLImageElement).parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 text-sm">Invalid image URL</div>';
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Notes (optional)
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any additional notes..."
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400/50 focus:border-red-400 dark:bg-slate-700/50 dark:text-gray-100 dark:placeholder-gray-400 transition-all duration-200 resize-none"
+              rows={3}
+            />
+          </div>
+
+          <GradientButton type="submit" className="w-full flex items-center justify-center gap-2" size="lg">
+            <Plus className="w-5 h-5" />
+            Add Wish Item
+          </GradientButton>
+        </div>
+      </form>
+    </Card>
   );
 }
 
