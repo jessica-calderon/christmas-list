@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, X } from 'lucide-react';
 import { useChristmasStore } from '../store/useChristmasStore';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
+import { subscribeToWishlist } from '../services/wishlist';
 
 export default function Home() {
   const people = useChristmasStore((state) => state.getPeople());
@@ -12,6 +13,29 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newPersonName, setNewPersonName] = useState('');
+  const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const unsubscribes: (() => void)[] = [];
+
+    people.forEach((person) => {
+      try {
+        const unsubscribe = subscribeToWishlist(person.id, (items) => {
+          setWishlistCounts((prev) => ({
+            ...prev,
+            [person.id]: items.length,
+          }));
+        });
+        unsubscribes.push(unsubscribe);
+      } catch (error) {
+        console.error(`Error subscribing to wishlist for ${person.id}:`, error);
+      }
+    });
+
+    return () => {
+      unsubscribes.forEach((unsubscribe) => unsubscribe());
+    };
+  }, [people]);
 
   const filteredPeople = people.filter((person) =>
     person.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -135,7 +159,7 @@ export default function Home() {
             </Card>
           ) : (
             filteredPeople.map((person) => {
-            const wishlistCount = person.wishlist.length;
+            const wishlistCount = wishlistCounts[person.id] ?? 0;
             return (
               <Card
                 key={person.id}

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChristmasStore } from '../store/useChristmasStore';
 import WishItemCard from '../components/WishItemCard';
@@ -8,15 +8,40 @@ import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import FloatingAddButton from '../components/FloatingAddButton';
 import type { WishItem } from '../types/wishItem';
+import { subscribeToWishlist, addWishlistItem, deleteWishlistItem, updateWishlistItem } from '../services/wishlist';
+import { isAdmin } from '../config/admin';
 
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const person = useChristmasStore((state) => state.getPerson(id || ''));
-  const addWishItem = useChristmasStore((state) => state.addWishItem);
-  const deleteWishItem = useChristmasStore((state) => state.deleteWishItem);
-  const editWishItem = useChristmasStore((state) => state.editWishItem);
+  const [wishlistItems, setWishlistItems] = useState<WishItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const unsubscribe = subscribeToWishlist(id, (items) => {
+        setWishlistItems(items);
+        setIsLoading(false);
+        setError(null);
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    } catch (err) {
+      console.error('Error loading wishlist:', err);
+      setError('Failed to load wishlist. Please refresh the page.');
+      setIsLoading(false);
+    }
+  }, [id]);
 
   if (!person) {
     return (
@@ -37,16 +62,44 @@ export default function PersonPage() {
     );
   }
 
-  const handleAddWishItem = (item: WishItem) => {
-    addWishItem(person.id, item);
+  const handleAddWishItem = async (item: WishItem) => {
+    if (!isAdmin()) {
+      alert('Only admins can add wishlist items.');
+      return;
+    }
+    try {
+      await addWishlistItem(person.id, item);
+    } catch (err) {
+      console.error('Error adding wishlist item:', err);
+      setError('Failed to add wishlist item. Please try again.');
+    }
   };
 
-  const handleDelete = (itemId: string) => {
-    deleteWishItem(person.id, itemId);
+  const handleDelete = async (itemId: string) => {
+    if (!isAdmin()) {
+      alert('Only admins can delete wishlist items.');
+      return;
+    }
+    try {
+      await deleteWishlistItem(person.id, itemId);
+    } catch (err) {
+      console.error('Error deleting wishlist item:', err);
+      setError('Failed to delete wishlist item. Please try again.');
+    }
   };
 
-  const handleEdit = (updatedItem: WishItem) => {
-    editWishItem(person.id, updatedItem);
+  const handleEdit = async (updatedItem: WishItem) => {
+    if (!isAdmin()) {
+      alert('Only admins can edit wishlist items.');
+      return;
+    }
+    try {
+      const { id: itemId, ...updates } = updatedItem;
+      await updateWishlistItem(person.id, itemId, updates);
+    } catch (err) {
+      console.error('Error updating wishlist item:', err);
+      setError('Failed to update wishlist item. Please try again.');
+    }
   };
 
   const scrollToForm = () => {
@@ -77,27 +130,41 @@ export default function PersonPage() {
               <div className="w-24 h-px bg-gradient-to-r from-transparent via-red-400 to-transparent mx-auto mb-4"></div>
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                 <span className="mr-2">🎁</span>
-                <span className="font-semibold text-gray-800 dark:text-gray-200">{person.wishlist.length}</span>
-                <span className="ml-1">wishlist {person.wishlist.length === 1 ? 'item' : 'items'}</span>
+                <span className="font-semibold text-gray-800 dark:text-gray-200">{wishlistItems.length}</span>
+                <span className="ml-1">wishlist {wishlistItems.length === 1 ? 'item' : 'items'}</span>
               </p>
             </div>
           </Card>
 
-          <div ref={formRef}>
-            <AddWishForm onAdd={handleAddWishItem} />
-          </div>
+          {error && (
+            <Card className="p-4 mb-6 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+              <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+            </Card>
+          )}
 
-          <FloatingAddButton onClick={scrollToForm} />
+          {isAdmin() && (
+            <div ref={formRef}>
+              <AddWishForm onAdd={handleAddWishItem} />
+            </div>
+          )}
 
-          {person.wishlist.length === 0 ? (
+          {isAdmin() && <FloatingAddButton onClick={scrollToForm} />}
+
+          {isLoading ? (
             <Card className="p-8 sm:p-12 text-center">
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
-                No wish items yet. Add one above! 🎁
+                Loading wishlist... 🎁
+              </p>
+            </Card>
+          ) : wishlistItems.length === 0 ? (
+            <Card className="p-8 sm:p-12 text-center">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
+                No wish items yet. {isAdmin() && 'Add one above! 🎁'}
               </p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-              {person.wishlist.map((item) => (
+              {wishlistItems.map((item) => (
                 <WishItemCard
                   key={item.id}
                   item={item}

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home } from 'lucide-react';
+import { Home, Lock, LogOut } from 'lucide-react';
+import { isAdmin, promptAdminLogin, logoutAdmin } from '../config/admin';
 // import ThemeToggle from '../components/ThemeToggle';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,7 +14,22 @@ export default function Header() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    setAdmin(isAdmin());
+
+    const handleStorageChange = () => {
+      setAdmin(isAdmin());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    const interval = setInterval(() => {
+      setAdmin(isAdmin());
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -36,9 +53,30 @@ export default function Header() {
             <Home className={`${isScrolled ? 'w-4 h-4' : 'w-5 h-5'} transition-all duration-300`} />
           </Link>
           <div className="flex-1"></div>
-          {/* <div className="relative z-10">
-            <ThemeToggle />
-          </div> */}
+          <div className="relative z-10 flex items-center gap-2">
+            {admin ? (
+              <button
+                onClick={logoutAdmin}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm"
+                title="Logout Admin"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            ) : (
+              <button
+                onClick={promptAdminLogin}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm"
+                title="Admin Login"
+              >
+                <Lock className="w-4 h-4" />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
+            )}
+            {/* <div className="relative z-10">
+              <ThemeToggle />
+            </div> */}
+          </div>
         </div>
       </div>
       <div className="snowflakes">
