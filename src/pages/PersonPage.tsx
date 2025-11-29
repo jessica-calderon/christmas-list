@@ -18,6 +18,7 @@ export default function PersonPage() {
   const [wishlistItems, setWishlistItems] = useState<WishItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [admin, setAdmin] = useState(isAdmin());
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +44,29 @@ export default function PersonPage() {
     }
   }, [id]);
 
+  useEffect(() => {
+    const updateAdminStatus = () => {
+      setAdmin(isAdmin());
+    };
+
+    updateAdminStatus();
+
+    // Listen for admin status changes (from login/logout)
+    window.addEventListener('adminStatusChanged', updateAdminStatus);
+    
+    // Listen for storage changes (from other tabs)
+    window.addEventListener('storage', updateAdminStatus);
+    
+    // Check periodically as fallback
+    const interval = setInterval(updateAdminStatus, 1000);
+
+    return () => {
+      window.removeEventListener('adminStatusChanged', updateAdminStatus);
+      window.removeEventListener('storage', updateAdminStatus);
+      clearInterval(interval);
+    };
+  }, []);
+
   if (!person) {
     return (
       <div className="min-h-screen pt-20 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-950">
@@ -63,10 +87,6 @@ export default function PersonPage() {
   }
 
   const handleAddWishItem = async (item: WishItem) => {
-    if (!isAdmin()) {
-      alert('Only admins can add wishlist items.');
-      return;
-    }
     try {
       await addWishlistItem(person.id, item);
     } catch (err) {
@@ -76,7 +96,7 @@ export default function PersonPage() {
   };
 
   const handleDelete = async (itemId: string) => {
-    if (!isAdmin()) {
+    if (!admin) {
       alert('Only admins can delete wishlist items.');
       return;
     }
@@ -89,7 +109,7 @@ export default function PersonPage() {
   };
 
   const handleEdit = async (updatedItem: WishItem) => {
-    if (!isAdmin()) {
+    if (!admin) {
       alert('Only admins can edit wishlist items.');
       return;
     }
@@ -142,13 +162,11 @@ export default function PersonPage() {
             </Card>
           )}
 
-          {isAdmin() && (
-            <div ref={formRef}>
-              <AddWishForm onAdd={handleAddWishItem} />
-            </div>
-          )}
+          <div ref={formRef}>
+            <AddWishForm onAdd={handleAddWishItem} />
+          </div>
 
-          {isAdmin() && <FloatingAddButton onClick={scrollToForm} />}
+          <FloatingAddButton onClick={scrollToForm} />
 
           {isLoading ? (
             <Card className="p-8 sm:p-12 text-center">
@@ -159,21 +177,30 @@ export default function PersonPage() {
           ) : wishlistItems.length === 0 ? (
             <Card className="p-8 sm:p-12 text-center">
               <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
-                No wish items yet. {isAdmin() && 'Add one above! 🎁'}
+                No wish items yet. Add one above! 🎁
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-              {wishlistItems.map((item) => (
-                <WishItemCard
-                  key={item.id}
-                  item={item}
-                  personId={person.id}
-                  onDelete={() => handleDelete(item.id)}
-                  onEdit={handleEdit}
-                />
-              ))}
-            </div>
+            <>
+              {!admin && (
+                <Card className="p-4 mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+                  <p className="text-yellow-800 dark:text-yellow-200 text-sm text-center">
+                    🔒 Wishlist items are blurred. Only admins can see the full details.
+                  </p>
+                </Card>
+              )}
+              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 ${!admin ? 'blur-sm pointer-events-none select-none' : ''}`}>
+                {wishlistItems.map((item) => (
+                  <WishItemCard
+                    key={item.id}
+                    item={item}
+                    personId={person.id}
+                    onDelete={() => handleDelete(item.id)}
+                    onEdit={handleEdit}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
       </Container>
