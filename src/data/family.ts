@@ -33,7 +33,7 @@ export const initialFamily: Person[] = [
   },
   {
     id: '7',
-    name: 'George Jr.',
+    name: 'GeorgeJr&Family',
     wishlist: [],
   },
   {
