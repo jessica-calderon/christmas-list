@@ -5,7 +5,6 @@ interface GradientButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
 }
 
 export default function GradientButton({
@@ -13,7 +12,6 @@ export default function GradientButton({
   onClick,
   type = 'button',
   className = '',
-  size = 'md',
 }: GradientButtonProps) {
   return (
     <button
