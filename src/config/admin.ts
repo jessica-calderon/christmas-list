@@ -8,7 +8,8 @@ export function promptAdminLogin(): void {
   const password = prompt('Enter admin password:');
   if (password === ADMIN_PASSWORD) {
     localStorage.setItem('admin', 'true');
-    window.location.reload();
+    // Dispatch custom event to notify components of admin status change
+    window.dispatchEvent(new Event('adminStatusChanged'));
   } else if (password !== null) {
     alert('Incorrect password');
   }
@@ -16,6 +17,7 @@ export function promptAdminLogin(): void {
 
 export function logoutAdmin(): void {
   localStorage.removeItem('admin');
-  window.location.reload();
+  // Dispatch custom event to notify components of admin status change
+  window.dispatchEvent(new Event('adminStatusChanged'));
 }
 

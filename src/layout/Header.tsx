@@ -13,21 +13,26 @@ export default function Header() {
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    setAdmin(isAdmin());
-
-    const handleStorageChange = () => {
+    const updateAdminStatus = () => {
       setAdmin(isAdmin());
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    const interval = setInterval(() => {
-      setAdmin(isAdmin());
-    }, 1000);
+    window.addEventListener('scroll', handleScroll);
+    updateAdminStatus();
+
+    // Listen for admin status changes (from login/logout)
+    window.addEventListener('adminStatusChanged', updateAdminStatus);
+    
+    // Listen for storage changes (from other tabs)
+    window.addEventListener('storage', updateAdminStatus);
+    
+    // Check periodically as fallback
+    const interval = setInterval(updateAdminStatus, 1000);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('adminStatusChanged', updateAdminStatus);
+      window.removeEventListener('storage', updateAdminStatus);
       clearInterval(interval);
     };
   }, []);
@@ -90,4 +95,3 @@ export default function Header() {
     </header>
   );
 }
-

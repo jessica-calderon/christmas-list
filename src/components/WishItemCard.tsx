@@ -52,12 +52,10 @@ export default function WishItemCard({
   };
 
   const adminMode = isAdmin();
-  const displayTitle = adminMode ? item.title : 'Hidden item 🎁';
   const displayLink = adminMode ? item.link : undefined;
-  const showContent = adminMode;
 
   return (
-    <Card className={`p-5 sm:p-6 ${!adminMode ? 'blur-sm pointer-events-none select-none opacity-80' : ''}`}>
+    <Card className="p-5 sm:p-6">
       {isEditing ? (
         <div className="space-y-4">
           <div>
@@ -139,7 +137,7 @@ export default function WishItemCard({
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row gap-4">
-          {showContent && item.image && (
+          {item.image && (
             <div className="flex-shrink-0">
               <img
                 src={item.image}
@@ -153,14 +151,14 @@ export default function WishItemCard({
           )}
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-lg sm:text-xl text-gray-800 dark:text-gray-100 mb-2">
-              {displayTitle}
+              {item.title}
             </h3>
-            {showContent && item.price && (
+            {item.price && (
               <p className="text-green-600 dark:text-green-400 font-semibold mb-2 text-lg">
                 ${item.price}
               </p>
             )}
-            {showContent && item.notes && (
+            {item.notes && (
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
                 {item.notes}
               </p>
@@ -174,9 +172,9 @@ export default function WishItemCard({
                   <ExternalLink className="w-4 h-4" />
                   Open Link
                 </button>
-              ) : !adminMode ? (
+              ) : item.link && !adminMode ? (
                 <span className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-400 text-white text-sm font-medium rounded-xl">
-                  🔒 Only visible to admin
+                  🔒 Link hidden
                 </span>
               ) : null}
               {adminMode && (
