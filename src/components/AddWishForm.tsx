@@ -41,9 +41,9 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
         const newItem: WishItem = {
           id: crypto.randomUUID(),
           title: title.trim(),
-          link: link.trim() || undefined,
-          notes: notes.trim() || undefined,
-          image: image.trim() || undefined,
+          link: link.trim() || '',
+          notes: notes.trim() || '',
+          image: image.trim() || '',
         };
         onAdd(newItem);
         setTitle('');
@@ -67,7 +67,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
           id: crypto.randomUUID(),
           title,
           link: externalLink.trim(),
-          notes: externalNotes.trim() || undefined,
+          notes: externalNotes.trim() || '',
         };
         onAdd(newItem);
         setExternalLink('');

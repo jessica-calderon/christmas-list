@@ -6,12 +6,14 @@ import { isAdmin } from '../config/admin';
 
 interface WishItemCardProps {
   item: WishItem;
+  personId: string;
   onDelete: () => void;
   onEdit: (updatedItem: WishItem) => void;
 }
 
 export default function WishItemCard({
   item,
+  personId: _personId,
   onDelete,
   onEdit,
 }: WishItemCardProps) {
@@ -26,10 +28,10 @@ export default function WishItemCard({
     onEdit({
       ...item,
       title: editTitle,
-      link: editLink.trim() || undefined,
-      price: editPrice.trim() || undefined,
-      notes: editNotes.trim() || undefined,
-      image: editImage.trim() || undefined,
+      link: editLink.trim() || '',
+      price: editPrice.trim() || '',
+      notes: editNotes.trim() || '',
+      image: editImage.trim() || '',
     });
     setIsEditing(false);
   };

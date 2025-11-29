@@ -168,6 +168,7 @@ export default function PersonPage() {
                 <WishItemCard
                   key={item.id}
                   item={item}
+                  personId={person.id}
                   onDelete={() => handleDelete(item.id)}
                   onEdit={handleEdit}
                 />
