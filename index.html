@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/christmas-list/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Christmas Wish List</title>
+    <script>
+      // Theme initialization - prevents flash of wrong theme
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/christmas-list/assets/index-DSFWRDjx.js"></script>
+    <link rel="stylesheet" crossorigin href="/christmas-list/assets/index-B8hWQw-V.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
