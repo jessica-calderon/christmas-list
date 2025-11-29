@@ -5,6 +5,7 @@ import { useChristmasStore } from '../store/useChristmasStore';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import { subscribeToWishlist } from '../services/wishlist';
+import { isSanta } from '../config/santa';
 
 export default function Home() {
   const people = useChristmasStore((state) => state.getPeople());
@@ -14,6 +15,7 @@ export default function Home() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newPersonName, setNewPersonName] = useState('');
   const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
+  const [santa, setSanta] = useState(isSanta());
 
   useEffect(() => {
     const unsubscribes: (() => void)[] = [];
@@ -36,6 +38,29 @@ export default function Home() {
       unsubscribes.forEach((unsubscribe) => unsubscribe());
     };
   }, [people]);
+
+  useEffect(() => {
+    const updateSantaStatus = () => {
+      setSanta(isSanta());
+    };
+
+    updateSantaStatus();
+
+    // Listen for Santa status changes (from login/logout)
+    window.addEventListener('santaStatusChanged', updateSantaStatus);
+    
+    // Listen for storage changes (from other tabs)
+    window.addEventListener('storage', updateSantaStatus);
+    
+    // Check periodically as fallback
+    const interval = setInterval(updateSantaStatus, 1000);
+
+    return () => {
+      window.removeEventListener('santaStatusChanged', updateSantaStatus);
+      window.removeEventListener('storage', updateSantaStatus);
+      clearInterval(interval);
+    };
+  }, []);
 
   const filteredPeople = people.filter((person) =>
     person.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,40 +85,40 @@ export default function Home() {
         }} />
       </div>
 
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in">
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight flex items-center justify-center gap-3 text-gray-800 dark:text-gray-100 mb-3">
-            <span className="inline-block text-4xl sm:text-5xl">🎄</span>
+      <div className="relative px-4 sm:px-6 max-w-xl mx-auto space-y-4 sm:space-y-6 animate-fade-in">
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight flex items-center justify-center gap-3 text-gray-800 dark:text-gray-100">
+            <span className="inline-block text-2xl sm:text-3xl md:text-4xl">🎄</span>
             <span>Family Christmas List 2025</span>
-            <span className="inline-block text-4xl sm:text-5xl">🎄</span>
+            <span className="inline-block text-2xl sm:text-3xl md:text-4xl">🎄</span>
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mt-2">
             Choose a Family Member
           </p>
         </div>
 
         {/* Search and Add Person Section */}
-        <div className="mb-6 space-y-4">
+        <div className="space-y-4">
           {/* Search Bar */}
-          <Card className="p-4">
+          <Card className="p-4 sm:p-6">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for a person..."
-                className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                className="w-full pl-10 pr-3 mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200"
               />
             </div>
           </Card>
 
           {/* Add Person Form */}
           {showAddForm ? (
-            <Card className="p-6">
+            <Card className="p-4 sm:p-6">
               <form onSubmit={handleAddPerson} className="space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100">
                     Add New Person
                   </h3>
                   <button
@@ -108,7 +133,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Name *
                   </label>
                   <input
@@ -116,7 +141,7 @@ export default function Home() {
                     value={newPersonName}
                     onChange={(e) => setNewPersonName(e.target.value)}
                     placeholder="Enter person's name"
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200"
                     required
                     autoFocus
                   />
@@ -132,7 +157,7 @@ export default function Home() {
                       setShowAddForm(false);
                       setNewPersonName('');
                     }}
-                    className="px-6 py-3 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
+                    className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 text-base sm:text-lg font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
                   >
                     Cancel
                   </button>
@@ -142,7 +167,7 @@ export default function Home() {
           ) : (
             <GradientButton
               onClick={() => setShowAddForm(true)}
-              className="w-full flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2"
             >
               <Plus className="w-5 h-5" />
               Add Person
@@ -150,10 +175,10 @@ export default function Home() {
           )}
         </div>
 
-        <div className="space-y-4 sm:space-y-5">
+        <div>
           {filteredPeople.length === 0 ? (
-            <Card className="p-8 text-center">
-              <p className="text-lg text-gray-600 dark:text-gray-400">
+            <Card className="p-4 sm:p-6 text-center">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
                 {searchQuery ? 'No people found matching your search.' : 'No people in the list yet.'}
               </p>
             </Card>
@@ -165,10 +190,10 @@ export default function Home() {
                 key={person.id}
                 onClick={() => navigate(`/person/${person.id}`)}
                 hover={true}
-                className="p-6 sm:p-8"
+                className="p-4 sm:p-6"
               >
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100">
                     {person.name}
                   </h2>
                   <div className="flex items-center gap-2">
@@ -183,6 +208,15 @@ export default function Home() {
             })
           )}
         </div>
+
+        {/* Footer message when not in Santa Mode */}
+        {!santa && (
+          <div className="mt-6 text-center">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 italic">
+              Pssst... No peeking! Santa is the only one who can see hidden gifts.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

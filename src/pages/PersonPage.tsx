@@ -9,7 +9,7 @@ import GradientButton from '../components/GradientButton';
 import FloatingAddButton from '../components/FloatingAddButton';
 import type { WishItem } from '../types/wishItem';
 import { subscribeToWishlist, addWishlistItem, deleteWishlistItem, updateWishlistItem } from '../services/wishlist';
-import { isAdmin } from '../config/admin';
+import { isSanta } from '../config/santa';
 
 export default function PersonPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ export default function PersonPage() {
   const [wishlistItems, setWishlistItems] = useState<WishItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [admin, setAdmin] = useState(isAdmin());
+  const [santa, setSanta] = useState(isSanta());
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,24 +45,24 @@ export default function PersonPage() {
   }, [id]);
 
   useEffect(() => {
-    const updateAdminStatus = () => {
-      setAdmin(isAdmin());
+    const updateSantaStatus = () => {
+      setSanta(isSanta());
     };
 
-    updateAdminStatus();
+    updateSantaStatus();
 
-    // Listen for admin status changes (from login/logout)
-    window.addEventListener('adminStatusChanged', updateAdminStatus);
+    // Listen for Santa status changes (from login/logout)
+    window.addEventListener('santaStatusChanged', updateSantaStatus);
     
     // Listen for storage changes (from other tabs)
-    window.addEventListener('storage', updateAdminStatus);
+    window.addEventListener('storage', updateSantaStatus);
     
     // Check periodically as fallback
-    const interval = setInterval(updateAdminStatus, 1000);
+    const interval = setInterval(updateSantaStatus, 1000);
 
     return () => {
-      window.removeEventListener('adminStatusChanged', updateAdminStatus);
-      window.removeEventListener('storage', updateAdminStatus);
+      window.removeEventListener('santaStatusChanged', updateSantaStatus);
+      window.removeEventListener('storage', updateSantaStatus);
       clearInterval(interval);
     };
   }, []);
@@ -72,8 +72,8 @@ export default function PersonPage() {
       <div className="min-h-screen pt-20 bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-950">
         <Container>
           <div className="text-center animate-fade-in">
-            <Card className="p-8 sm:p-12">
-              <p className="text-xl sm:text-2xl text-gray-800 dark:text-gray-200 mb-6">
+            <Card className="p-4 sm:p-6">
+              <p className="text-base sm:text-lg text-gray-800 dark:text-gray-200 mb-4">
                 Person not found
               </p>
               <GradientButton onClick={() => navigate('/')}>
@@ -96,8 +96,8 @@ export default function PersonPage() {
   };
 
   const handleDelete = async (itemId: string) => {
-    if (!admin) {
-      alert('Only admins can delete wishlist items.');
+    if (!santa) {
+      alert('Only Santa can delete wishlist items.');
       return;
     }
     try {
@@ -109,8 +109,8 @@ export default function PersonPage() {
   };
 
   const handleEdit = async (updatedItem: WishItem) => {
-    if (!admin) {
-      alert('Only admins can edit wishlist items.');
+    if (!santa) {
+      alert('Only Santa can edit wishlist items.');
       return;
     }
     try {
@@ -138,17 +138,26 @@ export default function PersonPage() {
 
       <Container>
         <div className="animate-fade-in">
+          {/* Santa Mode Banner */}
+          {santa && (
+            <Card className="p-3 sm:p-4 mb-4 bg-gradient-to-r from-red-500/20 via-green-500/20 to-red-500/20 dark:from-red-600/30 dark:via-green-600/30 dark:to-red-600/30 border-red-400/50 dark:border-red-500/50 animate-fade-in">
+              <p className="text-center text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100">
+                🎅 Santa Mode Enabled — All gifts revealed!
+              </p>
+            </Card>
+          )}
+
           {/* Title Section */}
-          <Card className="p-6 sm:p-8 mb-6 sm:mb-8">
+          <Card className="p-4 sm:p-6">
             <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-3">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
                 {person.name}'s Christmas Wishlist
               </h1>
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-3xl sm:text-4xl">🎄</span>
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <span className="text-2xl sm:text-3xl">🎄</span>
               </div>
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-red-400 to-transparent mx-auto mb-4"></div>
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
+              <div className="w-24 h-px bg-gradient-to-r from-transparent via-red-400 to-transparent mx-auto my-3"></div>
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
                 <span className="mr-2">🎁</span>
                 <span className="font-semibold text-gray-800 dark:text-gray-200">{wishlistItems.length}</span>
                 <span className="ml-1">wishlist {wishlistItems.length === 1 ? 'item' : 'items'}</span>
@@ -157,7 +166,7 @@ export default function PersonPage() {
           </Card>
 
           {error && (
-            <Card className="p-4 mb-6 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+            <Card className="p-4 sm:p-6 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
               <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
             </Card>
           )}
@@ -169,27 +178,20 @@ export default function PersonPage() {
           <FloatingAddButton onClick={scrollToForm} />
 
           {isLoading ? (
-            <Card className="p-8 sm:p-12 text-center">
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
+            <Card className="p-4 sm:p-6 text-center">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
                 Loading wishlist... 🎁
               </p>
             </Card>
           ) : wishlistItems.length === 0 ? (
-            <Card className="p-8 sm:p-12 text-center">
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
+            <Card className="p-4 sm:p-6 text-center">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
                 No wish items yet. Add one above! 🎁
               </p>
             </Card>
           ) : (
             <>
-              {!admin && (
-                <Card className="p-4 mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
-                  <p className="text-yellow-800 dark:text-yellow-200 text-sm text-center">
-                    🔒 Wishlist items are blurred. Only admins can see the full details.
-                  </p>
-                </Card>
-              )}
-              <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 ${!admin ? 'blur-sm pointer-events-none select-none' : ''}`}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {wishlistItems.map((item) => (
                   <WishItemCard
                     key={item.id}
@@ -201,6 +203,15 @@ export default function PersonPage() {
                 ))}
               </div>
             </>
+          )}
+
+          {/* Footer message when not in Santa Mode */}
+          {!santa && (
+            <div className="mt-6 text-center">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 italic">
+                Pssst... No peeking! Santa is the only one who can see hidden gifts.
+              </p>
+            </div>
           )}
         </div>
       </Container>
