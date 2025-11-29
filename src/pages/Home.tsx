@@ -1,10 +1,30 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search, Plus, X } from 'lucide-react';
 import { useChristmasStore } from '../store/useChristmasStore';
 import Card from '../components/Card';
+import GradientButton from '../components/GradientButton';
 
 export default function Home() {
   const people = useChristmasStore((state) => state.getPeople());
+  const addPerson = useChristmasStore((state) => state.addPerson);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newPersonName, setNewPersonName] = useState('');
+
+  const filteredPeople = people.filter((person) =>
+    person.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleAddPerson = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPersonName.trim()) {
+      addPerson(newPersonName.trim());
+      setNewPersonName('');
+      setShowAddForm(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen pt-20 pb-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950">
@@ -28,8 +48,93 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Search and Add Person Section */}
+        <div className="mb-6 space-y-4">
+          {/* Search Bar */}
+          <Card className="p-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for a person..."
+                className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+              />
+            </div>
+          </Card>
+
+          {/* Add Person Form */}
+          {showAddForm ? (
+            <Card className="p-6">
+              <form onSubmit={handleAddPerson} className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+                    Add New Person
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setNewPersonName('');
+                    }}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  </button>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={newPersonName}
+                    onChange={(e) => setNewPersonName(e.target.value)}
+                    placeholder="Enter person's name"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <GradientButton type="submit" className="flex-1 flex items-center justify-center gap-2">
+                    <Plus className="w-5 h-5" />
+                    Add Person
+                  </GradientButton>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setNewPersonName('');
+                    }}
+                    className="px-6 py-3 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </Card>
+          ) : (
+            <GradientButton
+              onClick={() => setShowAddForm(true)}
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Add Person
+            </GradientButton>
+          )}
+        </div>
+
         <div className="space-y-4 sm:space-y-5">
-          {people.map((person) => {
+          {filteredPeople.length === 0 ? (
+            <Card className="p-8 text-center">
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                {searchQuery ? 'No people found matching your search.' : 'No people in the list yet.'}
+              </p>
+            </Card>
+          ) : (
+            filteredPeople.map((person) => {
             const wishlistCount = person.wishlist.length;
             return (
               <Card
@@ -51,7 +156,8 @@ export default function Home() {
                 </div>
               </Card>
             );
-          })}
+            })
+          )}
         </div>
       </div>
     </div>

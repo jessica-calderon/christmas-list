@@ -78,7 +78,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
 
   return (
     <div className="max-w-3xl mx-auto mb-6">
-      <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-xl">
+      <div className="bg-slate-100 dark:bg-slate-900/40 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-3xl p-8 shadow-xl">
         {/* Mode Toggle */}
         <div className="mb-8">
           <div className="grid grid-cols-2 gap-4">
@@ -91,8 +91,8 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                 border-2
                 ${
                   mode === 'individual'
-                    ? 'bg-gradient-to-r from-red-500/20 to-green-500/20 border-green-400/50 text-white shadow-lg shadow-green-500/10'
-                    : 'bg-slate-800/40 border-white/10 text-gray-400 hover:border-white/20 hover:text-gray-300'
+                    ? 'bg-gradient-to-r from-red-500/20 to-green-500/20 border-green-400/50 dark:border-green-400/50 text-slate-900 dark:text-white shadow-lg shadow-green-500/10'
+                    : 'bg-white/50 dark:bg-slate-800/40 border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-black/20 dark:hover:border-white/20 hover:text-gray-800 dark:hover:text-gray-300'
                 }
               `}
             >
@@ -108,8 +108,8 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                 border-2
                 ${
                   mode === 'external'
-                    ? 'bg-gradient-to-r from-red-500/20 to-green-500/20 border-green-400/50 text-white shadow-lg shadow-green-500/10'
-                    : 'bg-slate-800/40 border-white/10 text-gray-400 hover:border-white/20 hover:text-gray-300'
+                    ? 'bg-gradient-to-r from-red-500/20 to-green-500/20 border-green-400/50 dark:border-green-400/50 text-slate-900 dark:text-white shadow-lg shadow-green-500/10'
+                    : 'bg-white/50 dark:bg-slate-800/40 border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-black/20 dark:hover:border-white/20 hover:text-gray-800 dark:hover:text-gray-300'
                 }
               `}
             >
@@ -132,7 +132,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
               <>
                 {/* Individual Item Mode */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Title *
                   </label>
                   <input
@@ -140,13 +140,13 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter wish item title"
-                    className="w-full px-4 py-3 bg-slate-800/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-gray-100 placeholder-gray-500 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Link (optional)
                   </label>
                   <input
@@ -154,26 +154,26 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-3 bg-slate-800/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-gray-100 placeholder-gray-500 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Image Upload (optional)
                   </label>
                   <ImageUploader value={image} onChange={setImage} />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Notes (optional)
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any additional notes..."
-                    className="w-full px-4 py-3 bg-slate-800/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-gray-100 placeholder-gray-500 transition-all duration-200 resize-none"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200 resize-none"
                     rows={3}
                   />
                 </div>
@@ -182,7 +182,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
               <>
                 {/* External Link Mode */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Link *
                   </label>
                   <input
@@ -190,23 +190,23 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={externalLink}
                     onChange={(e) => setExternalLink(e.target.value)}
                     placeholder="https://notes.apple.com/... or https://docs.google.com/... or https://amazon.com/... or https://pinterest.com/..."
-                    className="w-full px-4 py-3 bg-slate-800/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-gray-100 placeholder-gray-500 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
                     required
                   />
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
                     Supports iPhone Notes share links, Google Docs, Amazon lists, Pinterest boards, and other URLs
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
                     Notes (optional)
                   </label>
                   <textarea
                     value={externalNotes}
                     onChange={(e) => setExternalNotes(e.target.value)}
                     placeholder="Add any additional notes about this list..."
-                    className="w-full px-4 py-3 bg-slate-800/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-gray-100 placeholder-gray-500 transition-all duration-200 resize-none"
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200 resize-none"
                     rows={3}
                   />
                 </div>

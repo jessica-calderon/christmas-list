@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import GradientButton from './GradientButton';
 
 interface FloatingAddButtonProps {
   onClick: () => void;
@@ -45,4 +44,5 @@ export default function FloatingAddButton({ onClick }: FloatingAddButtonProps) {
     </div>
   );
 }
+
 

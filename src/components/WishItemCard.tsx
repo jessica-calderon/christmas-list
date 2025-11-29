@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Pencil, Trash2, Save, X, ExternalLink } from 'lucide-react';
 import type { WishItem } from '../types/wishItem';
 import Card from './Card';
-import GradientButton from './GradientButton';
 
 interface WishItemCardProps {
   item: WishItem;

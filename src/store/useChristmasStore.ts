@@ -8,6 +8,7 @@ interface ChristmasStore {
   people: Person[];
   getPeople: () => Person[];
   getPerson: (id: string) => Person | undefined;
+  addPerson: (name: string) => void;
   addWishItem: (personId: string, item: WishItem) => void;
   editWishItem: (personId: string, updatedItem: WishItem) => void;
   deleteWishItem: (personId: string, itemId: string) => void;
@@ -19,6 +20,16 @@ export const useChristmasStore = create<ChristmasStore>()(
       people: initialFamily,
       getPeople: () => get().people,
       getPerson: (id: string) => get().people.find((p) => p.id === id),
+      addPerson: (name: string) => {
+        const newPerson: Person = {
+          id: crypto.randomUUID(),
+          name: name.trim(),
+          wishlist: [],
+        };
+        set((state) => ({
+          people: [...state.people, newPerson],
+        }));
+      },
       addWishItem: (personId: string, item: WishItem) => {
         set((state) => ({
           people: state.people.map((person) =>

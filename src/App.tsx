@@ -13,7 +13,7 @@ function AppContent() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen">
+    <div className="bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white min-h-screen transition-colors">
       <Header />
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
