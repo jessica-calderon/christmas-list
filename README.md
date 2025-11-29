@@ -2,6 +2,49 @@
 
 A React + TypeScript + Vite application for managing Christmas wish lists.
 
+## Firebase Configuration
+
+This application requires Firebase configuration to work properly. You need to set up environment variables before building or deploying.
+
+### Setting Up Environment Variables
+
+1. Create a `.env` file in the root directory (copy from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Fill in your Firebase configuration values in the `.env` file:
+   ```
+   VITE_FIREBASE_API_KEY=your_api_key_here
+   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain_here
+   VITE_FIREBASE_PROJECT_ID=your_project_id_here
+   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket_here
+   VITE_FIREBASE_SENDER_ID=your_sender_id_here
+   VITE_FIREBASE_APP_ID=your_app_id_here
+   ```
+
+3. **Important:** The `.env` file should be in your `.gitignore` (it should not be committed to version control).
+
+### For GitHub Actions Deployment
+
+If you're using GitHub Actions for automatic deployment, you need to set the environment variables as secrets:
+
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** for each environment variable:
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+
+4. Update your GitHub Actions workflow to use these secrets (if not already configured).
+
+### For Manual Deployment
+
+When running `npm run deploy` locally, make sure your `.env` file exists and contains all required values. The environment variables will be embedded into the build at build time.
+
 ## GitHub Pages Deployment
 
 This project is configured for GitHub Pages deployment. There are two ways to deploy:
