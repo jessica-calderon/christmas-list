@@ -4,6 +4,7 @@ import type { WishItem } from '../types/wishItem';
 import GradientButton from './GradientButton';
 import ImageUploader from './ImageUploader';
 import Card from './Card';
+import { generateUUID } from '../utils/uuid';
 
 interface AddWishFormProps {
   onAdd: (item: WishItem) => void;
@@ -40,7 +41,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
     if (mode === 'individual') {
       if (title.trim()) {
         const newItem: WishItem = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           title: title.trim(),
           link: link.trim() || '',
           notes: notes.trim() || '',
@@ -65,7 +66,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
         }
         
         const newItem: WishItem = {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           title,
           link: externalLink.trim(),
           notes: externalNotes.trim() || '',
