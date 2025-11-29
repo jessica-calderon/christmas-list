@@ -1,4 +1,4 @@
-import { ref, push, set, update, remove, onValue, type DatabaseReference, type Unsubscribe, type Database } from 'firebase/database';
+import { ref, push, set, update, remove, onValue, type DatabaseReference, type Unsubscribe } from 'firebase/database';
 import { database } from '../firebase';
 import type { WishItem } from '../types/wishItem';
 
@@ -40,15 +40,8 @@ export function sanitizeItem<T extends Partial<Omit<WishItem, 'id'>>>(
   return sanitized;
 }
 
-function getDatabase(): Database {
-  if (!database) {
-    throw new Error('Firebase database is not configured. Please check your environment variables.');
-  }
-  return database;
-}
-
 export function getWishlistRef(personId: string): DatabaseReference {
-  return ref(getDatabase(), `wishlists/${personId}/items`);
+  return ref(database, `wishlists/${personId}/items`);
 }
 
 export async function addWishlistItem(personId: string, item: WishItem): Promise<void> {
@@ -75,7 +68,7 @@ export async function updateWishlistItem(
   updates: Partial<Omit<WishItem, 'id'>>
 ): Promise<void> {
   try {
-    const itemRef = ref(getDatabase(), `wishlists/${personId}/items/${itemId}`);
+    const itemRef = ref(database, `wishlists/${personId}/items/${itemId}`);
     const sanitizedUpdates = sanitizeItem(updates);
     await update(itemRef, sanitizedUpdates);
   } catch (error) {
@@ -86,7 +79,7 @@ export async function updateWishlistItem(
 
 export async function deleteWishlistItem(personId: string, itemId: string): Promise<void> {
   try {
-    const itemRef = ref(getDatabase(), `wishlists/${personId}/items/${itemId}`);
+    const itemRef = ref(database, `wishlists/${personId}/items/${itemId}`);
     await remove(itemRef);
   } catch (error) {
     console.error('Error deleting wishlist item:', error);
@@ -98,12 +91,6 @@ export function subscribeToWishlist(
   personId: string,
   callback: (items: FirebaseWishlistItem[]) => void
 ): () => void {
-  if (!database) {
-    console.warn('Firebase database not configured. Returning empty wishlist.');
-    callback([]);
-    return () => {}; // Return a no-op unsubscribe function
-  }
-
   const wishlistRef = getWishlistRef(personId);
   
   const unsubscribe: Unsubscribe = onValue(
