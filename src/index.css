@@ -16,17 +16,17 @@
 /* -----------------------------------
    HTML + BODY (NO hardcoded colors!)
 ------------------------------------ */
-html {
-  @apply transition-colors duration-300 ease-in-out;
-}
+@layer base {
+  html {
+    @apply transition-colors duration-300 ease-in-out;
+  }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-
-  /* Tailwind-controlled colors */
-  @apply bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-white transition-colors;
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    @apply bg-slate-100 text-slate-900 dark:bg-slate-900 dark:text-white transition-colors;
+  }
 }
 
 /* -----------------------------
@@ -46,7 +46,7 @@ body {
 .snowflake {
   position: absolute;
   top: -10px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.9em;
   font-family: Arial;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
@@ -54,12 +54,19 @@ body {
   pointer-events: none;
 }
 
-.snowflake:nth-of-type(1) { left: 10%; animation-duration: 10s; animation-delay: 0s; }
-.snowflake:nth-of-type(2) { left: 20%; animation-duration: 12s; animation-delay: 1s; }
-.snowflake:nth-of-type(3) { left: 30%; animation-duration: 14s; animation-delay: 2s; }
-.snowflake:nth-of-type(4) { left: 40%; animation-duration: 11s; animation-delay: 0.5s; }
-.snowflake:nth-of-type(5) { left: 60%; animation-duration: 13s; animation-delay: 1.5s; }
-.snowflake:nth-of-type(6) { left: 80%; animation-duration: 15s; animation-delay: 2.5s; }
+/* More snowflakes with varied positions and timings */
+.snowflake:nth-of-type(1) { left: 5%; animation-duration: 10s; animation-delay: 0s; }
+.snowflake:nth-of-type(2) { left: 15%; animation-duration: 12s; animation-delay: 1s; }
+.snowflake:nth-of-type(3) { left: 25%; animation-duration: 14s; animation-delay: 2s; }
+.snowflake:nth-of-type(4) { left: 35%; animation-duration: 11s; animation-delay: 0.5s; }
+.snowflake:nth-of-type(5) { left: 45%; animation-duration: 13s; animation-delay: 1.5s; }
+.snowflake:nth-of-type(6) { left: 55%; animation-duration: 15s; animation-delay: 2.5s; }
+.snowflake:nth-of-type(7) { left: 65%; animation-duration: 12s; animation-delay: 0.8s; }
+.snowflake:nth-of-type(8) { left: 75%; animation-duration: 14s; animation-delay: 1.8s; }
+.snowflake:nth-of-type(9) { left: 85%; animation-duration: 11s; animation-delay: 0.3s; }
+.snowflake:nth-of-type(10) { left: 10%; animation-duration: 13s; animation-delay: 2.2s; }
+.snowflake:nth-of-type(11) { left: 50%; animation-duration: 16s; animation-delay: 1.2s; }
+.snowflake:nth-of-type(12) { left: 90%; animation-duration: 12s; animation-delay: 0.7s; }
 
 @keyframes snowfall {
   0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }

@@ -76,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen pt-20 pb-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950">
+    <div className="relative min-h-screen pt-20 pb-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 3rem)' }}>
       {/* Subtle snowflake pattern background */}
       <div className="fixed inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0" style={{
@@ -175,7 +175,7 @@ export default function Home() {
           )}
         </div>
 
-        <div>
+        <div className="space-y-3">
           {filteredPeople.length === 0 ? (
             <Card className="p-4 sm:p-6 text-center">
               <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
