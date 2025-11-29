@@ -47,7 +47,13 @@ export default function Header() {
         shadow-sm sm:shadow-lg
         transition-all duration-300 ease-out
         ${isScrolled ? 'py-2' : 'py-3'}
+        pt-[max(env(safe-area-inset-top),0.75rem)]
+        pb-[max(env(safe-area-inset-bottom),0.75rem)]
       `}
+      style={{
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="flex items-center justify-between">
@@ -83,14 +89,6 @@ export default function Header() {
             </div> */}
           </div>
         </div>
-      </div>
-      <div className="snowflakes">
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❄</div>
       </div>
     </header>
   );

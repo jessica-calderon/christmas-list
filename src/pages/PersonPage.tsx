@@ -127,7 +127,7 @@ export default function PersonPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950">
+    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-b from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 3rem)' }}>
       {/* Subtle snowflake pattern background */}
       <div className="fixed inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0" style={{
@@ -191,7 +191,7 @@ export default function PersonPage() {
             </Card>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
                 {wishlistItems.map((item) => (
                   <WishItemCard
                     key={item.id}

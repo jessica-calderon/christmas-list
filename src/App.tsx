@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Header from './layout/Header';
 import Home from './pages/Home';
 import PersonPage from './pages/PersonPage';
+import SnowOverlay from './components/SnowOverlay';
 
 function AppContent() {
   const location = useLocation();
@@ -19,6 +20,7 @@ function AppContent() {
         <Route path="/" element={<Home />} />
         <Route path="/person/:id" element={<PersonPage />} />
       </Routes>
+      <SnowOverlay />
     </div>
   );
 }
