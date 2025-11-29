@@ -3,6 +3,7 @@ import { Plus, Package, Link as LinkIcon } from 'lucide-react';
 import type { WishItem } from '../types/wishItem';
 import GradientButton from './GradientButton';
 import ImageUploader from './ImageUploader';
+import Card from './Card';
 
 interface AddWishFormProps {
   onAdd: (item: WishItem) => void;
@@ -77,17 +78,17 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mb-6">
-      <div className="bg-slate-100 dark:bg-slate-900/40 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-3xl p-8 shadow-xl">
+    <div>
+      <Card className="p-4 sm:p-6">
         {/* Mode Toggle */}
-        <div className="mb-8">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => handleModeChange('individual')}
               className={`
-                relative flex items-center justify-center gap-3 px-6 py-4 rounded-2xl
-                font-semibold text-sm transition-all duration-300
+                relative flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl
+                font-semibold text-xs sm:text-sm transition-all duration-300
                 border-2
                 ${
                   mode === 'individual'
@@ -96,15 +97,16 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                 }
               `}
             >
-              <Package className="w-5 h-5" />
-              Add Individual Item
+              <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Add Individual Item</span>
+              <span className="sm:hidden">Individual</span>
             </button>
             <button
               type="button"
               onClick={() => handleModeChange('external')}
               className={`
-                relative flex items-center justify-center gap-3 px-6 py-4 rounded-2xl
-                font-semibold text-sm transition-all duration-300
+                relative flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl
+                font-semibold text-xs sm:text-sm transition-all duration-300
                 border-2
                 ${
                   mode === 'external'
@@ -113,8 +115,9 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                 }
               `}
             >
-              <LinkIcon className="w-5 h-5" />
-              Add Link to External List
+              <LinkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Add Link to External List</span>
+              <span className="sm:hidden">External</span>
             </button>
           </div>
         </div>
@@ -123,7 +126,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
         <form onSubmit={handleSubmit}>
           <div
             className={`
-              space-y-6
+              space-y-4
               transition-all duration-300 ease-in-out
               ${isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}
             `}
@@ -132,7 +135,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
               <>
                 {/* Individual Item Mode */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Title *
                   </label>
                   <input
@@ -140,13 +143,13 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter wish item title"
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Link (optional)
                   </label>
                   <input
@@ -154,26 +157,28 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Image Upload (optional)
                   </label>
-                  <ImageUploader value={image} onChange={setImage} />
+                  <div className="mt-1">
+                    <ImageUploader value={image} onChange={setImage} />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Notes (optional)
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any additional notes..."
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200 resize-none"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200 resize-none"
                     rows={3}
                   />
                 </div>
@@ -182,7 +187,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
               <>
                 {/* External Link Mode */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Link *
                   </label>
                   <input
@@ -190,7 +195,7 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                     value={externalLink}
                     onChange={(e) => setExternalLink(e.target.value)}
                     placeholder="https://notes.apple.com/... or https://docs.google.com/... or https://amazon.com/... or https://pinterest.com/..."
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200"
                     required
                   />
                   <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
@@ -199,27 +204,27 @@ export default function AddWishForm({ onAdd }: AddWishFormProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300">
                     Notes (optional)
                   </label>
                   <textarea
                     value={externalNotes}
                     onChange={(e) => setExternalNotes(e.target.value)}
                     placeholder="Add any additional notes about this list..."
-                    className="w-full px-4 py-3 bg-white/50 dark:bg-slate-800/40 border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 transition-all duration-200 resize-none"
+                    className="w-full mt-1 p-3 rounded-xl bg-gray-800 text-sm text-slate-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400/50 focus:border-green-400/50 transition-all duration-200 resize-none"
                     rows={3}
                   />
                 </div>
               </>
             )}
 
-            <GradientButton type="submit" className="w-full flex items-center justify-center gap-2 mt-8" size="lg">
+            <GradientButton type="submit" className="flex items-center justify-center gap-2 mt-4">
               <Plus className="w-5 h-5" />
               {mode === 'individual' ? 'Add Wish Item' : 'Add External List Link'}
             </GradientButton>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }
