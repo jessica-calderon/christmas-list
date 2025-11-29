@@ -1,21 +1,68 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, X } from 'lucide-react';
+import { Search, Plus, X, Trash2 } from 'lucide-react';
 import { useChristmasStore } from '../store/useChristmasStore';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
+import Toast from '../components/Toast';
 import { subscribeToWishlist } from '../services/wishlist';
+import { subscribeToPersons, addPerson, deletePerson, getCurrentUserId } from '../services/persons';
 import { isSanta } from '../config/santa';
+import { initialFamily } from '../data/family';
+import type { Person } from '../types/person';
 
 export default function Home() {
   const people = useChristmasStore((state) => state.getPeople());
-  const addPerson = useChristmasStore((state) => state.addPerson);
+  const setPeople = useChristmasStore((state) => state.setPeople);
+  const deletePersonFromStore = useChristmasStore((state) => state.deletePerson);
+  const markInitialFamilyDeleted = useChristmasStore((state) => state.markInitialFamilyDeleted);
+  const deletedInitialFamilyIds = useChristmasStore((state) => state.deletedInitialFamilyIds);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newPersonName, setNewPersonName] = useState('');
   const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
   const [santa, setSanta] = useState(isSanta());
+  const [isAdding, setIsAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  // Subscribe to Firebase persons
+  useEffect(() => {
+    const unsubscribe = subscribeToPersons((firebasePersons) => {
+      // Merge Firebase persons with initial family
+      // Initial family members don't have createdBy, so we keep them
+      const initialFamilyIds = new Set(initialFamily.map(p => p.id));
+      const deletedIdsSet = new Set(deletedInitialFamilyIds);
+      
+      // Convert Firebase persons to Person type (add wishlist: [])
+      const firebasePersonsAsPeople: Person[] = firebasePersons.map(p => ({
+        ...p,
+        wishlist: [],
+      }));
+      
+      // Filter out deleted initial family members
+      const activeInitialFamily = initialFamily.filter(p => !deletedIdsSet.has(p.id));
+      
+      // Combine: keep active initial family, add Firebase persons that aren't in initial family
+      const combined: Person[] = [
+        ...activeInitialFamily,
+        ...firebasePersonsAsPeople.filter(p => !initialFamilyIds.has(p.id))
+      ];
+      
+      setPeople(combined);
+      
+      // Mark as initialized
+      if (!hasInitialized) {
+        setHasInitialized(true);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [setPeople, hasInitialized, deletedInitialFamilyIds]);
 
   useEffect(() => {
     const unsubscribes: (() => void)[] = [];
@@ -66,13 +113,71 @@ export default function Home() {
     person.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddPerson = (e: React.FormEvent) => {
+  const handleAddPerson = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPersonName.trim()) {
-      addPerson(newPersonName.trim());
-      setNewPersonName('');
-      setShowAddForm(false);
+    if (newPersonName.trim() && !isAdding) {
+      setIsAdding(true);
+      try {
+        await addPerson(newPersonName.trim());
+        setNewPersonName('');
+        setShowAddForm(false);
+        setToast({ message: 'Person added successfully! 🎄', type: 'success' });
+      } catch (error: any) {
+        console.error('Error adding person:', error);
+        const errorMessage = error?.message || error?.code || 'Unknown error';
+        const fullError = `Failed to add person: ${errorMessage}`;
+        console.error('Full error details:', error);
+        setToast({ message: fullError, type: 'error' });
+      } finally {
+        setIsAdding(false);
+      }
     }
+  };
+
+  const handleDeletePerson = async (e: React.MouseEvent, personId: string, person: Person) => {
+    e.stopPropagation(); // Prevent navigation when clicking delete
+    
+    // Check permissions
+    const currentUserId = getCurrentUserId();
+    const isCreator = person.createdBy === currentUserId;
+    const canDelete = santa || isCreator;
+    
+    if (!canDelete) {
+      alert('You can only delete people you created. Santa can delete anyone.');
+      return;
+    }
+    
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to delete ${person.name}?`)) {
+      return;
+    }
+    
+    setIsDeleting(personId);
+    try {
+      if (person.createdBy) {
+        // Firebase person - delete from Firebase
+        await deletePerson(personId);
+      } else {
+        // Initial family member - delete from local store and mark as deleted
+        deletePersonFromStore(personId);
+        markInitialFamilyDeleted(personId);
+      }
+      setToast({ message: `${person.name} deleted successfully! 🗑️`, type: 'error' });
+    } catch (error) {
+      console.error('Error deleting person:', error);
+      setToast({ message: 'Failed to delete person. Please try again.', type: 'error' });
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
+  const canDeletePerson = (person: Person): boolean => {
+    // Santa can delete anyone (Firebase persons and initial family members)
+    if (santa) return true;
+    
+    // Regular users can only delete Firebase persons they created
+    if (!person.createdBy) return false; // Can't delete initial family members (unless Santa)
+    return person.createdBy === getCurrentUserId(); // Can delete if you created it
   };
 
   return (
@@ -147,9 +252,13 @@ export default function Home() {
                   />
                 </div>
                 <div className="flex gap-3">
-                  <GradientButton type="submit" className="flex-1 flex items-center justify-center gap-2">
+                  <GradientButton 
+                    type="submit" 
+                    className="flex-1 flex items-center justify-center gap-2"
+                    disabled={isAdding}
+                  >
                     <Plus className="w-5 h-5" />
-                    Add Person
+                    {isAdding ? 'Adding...' : 'Add Person'}
                   </GradientButton>
                   <button
                     type="button"
@@ -185,11 +294,14 @@ export default function Home() {
           ) : (
             filteredPeople.map((person) => {
             const wishlistCount = wishlistCounts[person.id] ?? 0;
+            const showDeleteButton = canDeletePerson(person);
+            const isDeletingThis = isDeleting === person.id;
+            
             return (
               <Card
                 key={person.id}
-                onClick={() => navigate(`/person/${person.id}`)}
-                hover={true}
+                onClick={() => !isDeletingThis && navigate(`/person/${person.id}`)}
+                hover={!isDeletingThis}
                 className="p-4 sm:p-6"
               >
                 <div className="flex items-center justify-between">
@@ -201,6 +313,16 @@ export default function Home() {
                       <span className="mr-1.5">🎁</span>
                       {wishlistCount}
                     </span>
+                    {showDeleteButton && (
+                      <button
+                        onClick={(e) => handleDeletePerson(e, person.id, person)}
+                        disabled={isDeletingThis}
+                        className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={santa ? "Santa: Delete person" : "Delete person you created"}
+                      >
+                        <Trash2 className={`w-5 h-5 text-red-600 dark:text-red-400 ${isDeletingThis ? 'animate-pulse' : ''}`} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -218,6 +340,13 @@ export default function Home() {
           </div>
         )}
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

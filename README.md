@@ -45,6 +45,42 @@ If you're using GitHub Actions for automatic deployment, you need to set the env
 
 When running `npm run deploy` locally, make sure your `.env` file exists and contains all required values. The environment variables will be embedded into the build at build time.
 
+### Firebase Realtime Database Rules
+
+This application requires Firebase Realtime Database rules that allow reads and writes to both `/wishlists` and `/persons` paths. 
+
+**To update your Firebase Realtime Database rules:**
+
+1. Go to [Firebase Console](https://console.firebase.google.com/project/christmas-2025-76726)
+2. Navigate to **Realtime Database** → **Rules**
+3. Update your rules to allow reads and writes. Example rules:
+
+```json
+{
+  "rules": {
+    "wishlists": {
+      "$personId": {
+        "items": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "persons": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
+```
+
+**Note:** These rules allow public read/write access. For production, consider implementing authentication and more restrictive rules.
+
+If you're getting "Failed to add person" errors, check:
+- Browser console for the exact Firebase error code
+- That your Firebase Realtime Database rules allow writes to `/persons`
+- That your Firebase project is properly configured
+
 ## GitHub Pages Deployment
 
 This project is configured for GitHub Pages deployment. There are two ways to deploy:

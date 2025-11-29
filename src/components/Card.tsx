@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 interface CardProps {
   children: ReactNode;
   className?: string;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   hover?: boolean;
 }
 
@@ -19,7 +19,7 @@ export default function Card({ children, className = '', onClick, hover = false 
   return (
     <div
       className={`${baseClasses} ${hoverClasses} ${clickableClasses} ${className}`}
-      onClick={onClick}
+      onClick={(e) => onClick?.(e)}
     >
       {children}
     </div>

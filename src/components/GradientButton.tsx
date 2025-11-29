@@ -5,6 +5,7 @@ interface GradientButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
+  disabled?: boolean;
 }
 
 export default function GradientButton({
@@ -12,11 +13,13 @@ export default function GradientButton({
   onClick,
   type = 'button',
   className = '',
+  disabled = false,
 }: GradientButtonProps) {
   return (
     <button
       type={type}
       onClick={onClick}
+      disabled={disabled}
       className={`
         w-full rounded-xl
         py-3 sm:py-4
@@ -30,6 +33,7 @@ export default function GradientButton({
         hover:shadow-green-500/25
         transition-all duration-300 ease-out
         transform hover:scale-[1.02]
+        disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
         ${className}
       `}
     >

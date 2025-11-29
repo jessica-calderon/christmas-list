@@ -7,6 +7,7 @@ import Container from '../layout/Container';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import FloatingAddButton from '../components/FloatingAddButton';
+import Toast from '../components/Toast';
 import type { WishItem } from '../types/wishItem';
 import { subscribeToWishlist, addWishlistItem, deleteWishlistItem, updateWishlistItem } from '../services/wishlist';
 import { isSanta } from '../config/santa';
@@ -19,6 +20,7 @@ export default function PersonPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [santa, setSanta] = useState(isSanta());
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,9 +91,11 @@ export default function PersonPage() {
   const handleAddWishItem = async (item: WishItem) => {
     try {
       await addWishlistItem(person.id, item);
+      setToast({ message: 'Wishlist item added successfully! 🎁', type: 'success' });
     } catch (err) {
       console.error('Error adding wishlist item:', err);
       setError('Failed to add wishlist item. Please try again.');
+      setToast({ message: 'Failed to add wishlist item. Please try again.', type: 'error' });
     }
   };
 
@@ -102,9 +106,11 @@ export default function PersonPage() {
     }
     try {
       await deleteWishlistItem(person.id, itemId);
+      setToast({ message: 'Wishlist item deleted successfully! 🗑️', type: 'error' });
     } catch (err) {
       console.error('Error deleting wishlist item:', err);
       setError('Failed to delete wishlist item. Please try again.');
+      setToast({ message: 'Failed to delete wishlist item. Please try again.', type: 'error' });
     }
   };
 
@@ -215,6 +221,13 @@ export default function PersonPage() {
           )}
         </div>
       </Container>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
