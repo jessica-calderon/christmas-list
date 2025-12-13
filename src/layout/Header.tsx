@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Lock, LogOut } from 'lucide-react';
+import { Home, Lock, LogOut, Download } from 'lucide-react';
 import { isSanta, promptSantaLogin, logoutSanta } from '../config/santa';
+import { useChristmasStore } from '../store/useChristmasStore';
+import { fetchAllWishlistData, generateCSV, downloadCSV } from '../utils/csvExport';
 // import ThemeToggle from '../components/ThemeToggle';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [santa, setSanta] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const getPeople = useChristmasStore((state) => state.getPeople);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +41,29 @@ export default function Header() {
     };
   }, []);
 
+  const handleDownloadCSV = async () => {
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    try {
+      const people = getPeople();
+      if (people.length === 0) {
+        alert('No people in the list to export.');
+        return;
+      }
+      const peopleWithWishlists = await fetchAllWishlistData(people);
+      const csvContent = generateCSV(peopleWithWishlists);
+      const filename = `christmas-wishlist-${new Date().toISOString().split('T')[0]}.csv`;
+      downloadCSV(csvContent, filename);
+      // Success - the download has started
+    } catch (error) {
+      console.error('Error downloading CSV:', error);
+      alert('Failed to download CSV. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <header
       className={`
@@ -66,14 +93,25 @@ export default function Header() {
           <div className="flex-1"></div>
           <div className="relative z-10 flex items-center gap-2">
             {santa ? (
-              <button
-                onClick={logoutSanta}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm"
-                title="Exit Santa Mode"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Exit</span>
-              </button>
+              <>
+                <button
+                  onClick={handleDownloadCSV}
+                  disabled={isDownloading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Download wishlist as CSV"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="hidden sm:inline">{isDownloading ? 'Downloading...' : 'Download CSV'}</span>
+                </button>
+                <button
+                  onClick={logoutSanta}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-xl transition-all duration-200 backdrop-blur-sm"
+                  title="Exit Santa Mode"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Exit</span>
+                </button>
+              </>
             ) : (
               <button
                 onClick={promptSantaLogin}
