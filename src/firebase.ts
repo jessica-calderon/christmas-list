@@ -5,8 +5,12 @@ import { getDatabase } from 'firebase/database';
 // Remove trailing slash from database URL if present
 const databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL?.replace(/\/$/, '');
 
-if (!databaseURL) {
-  console.error('VITE_FIREBASE_DATABASE_URL is not set');
+// Fail fast if required database URL is missing
+if (!databaseURL || databaseURL.trim() === '') {
+  throw new Error(
+    'VITE_FIREBASE_DATABASE_URL is required but was not set. ' +
+    'Please configure this environment variable in your .env file or GitHub Secrets.'
+  );
 }
 
 const firebaseConfig = {
@@ -16,9 +20,8 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  databaseURL: databaseURL || '',
+  databaseURL: databaseURL,
 };
 
 const app = initializeApp(firebaseConfig);
 export const database = getDatabase(app);
-
