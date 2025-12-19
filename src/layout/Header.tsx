@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Home, Lock, LogOut, Download } from 'lucide-react';
 import { isSanta, promptSantaLogin, logoutSanta } from '../config/santa';
 import { useChristmasStore } from '../store/useChristmasStore';
-import { fetchAllWishlistData, generateCSV, downloadCSV } from '../utils/csvExport';
+import { fetchAllWishlistData, fetchSantaTrackingData, generateCSV, downloadCSV } from '../utils/csvExport';
 // import ThemeToggle from '../components/ThemeToggle';
 
 export default function Header() {
@@ -52,7 +52,8 @@ export default function Header() {
         return;
       }
       const peopleWithWishlists = await fetchAllWishlistData(people);
-      const csvContent = generateCSV(peopleWithWishlists);
+      const santaTracking = await fetchSantaTrackingData();
+      const csvContent = generateCSV(peopleWithWishlists, santaTracking || undefined);
       const filename = `christmas-wishlist-${new Date().toISOString().split('T')[0]}.csv`;
       downloadCSV(csvContent, filename);
       // Success - the download has started
