@@ -1,4 +1,4 @@
-import { ref, set, update, onValue, type DatabaseReference, type Unsubscribe } from 'firebase/database';
+import { ref, set, onValue, type DatabaseReference, type Unsubscribe } from 'firebase/database';
 import { database } from '../firebase';
 import type { SantaRecipientStatusData, SantaGiftTracking } from '../types/santaTracking';
 import { getCurrentUserId } from './persons';
