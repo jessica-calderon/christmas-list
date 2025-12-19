@@ -1,26 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
-// Firebase configuration from environment variables
-// Remove trailing slash from database URL if present
-const databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL?.replace(/\/$/, '');
-
-// Fail fast if required database URL is missing
-if (!databaseURL || databaseURL.trim() === '') {
-  throw new Error(
-    'VITE_FIREBASE_DATABASE_URL is required but was not set. ' +
-    'Please configure this environment variable in your .env file or GitHub Secrets.'
-  );
-}
-
+// Firebase configuration - hardcoded for private repository
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  databaseURL: databaseURL,
+  apiKey: 'AIzaSyC8S19DYHafqA30OMQG68uedWewd99_qAk',
+  authDomain: 'christmas-2025-76726.firebaseapp.com',
+  projectId: 'christmas-2025-76726',
+  storageBucket: 'christmas-2025-76726.firebasestorage.app',
+  messagingSenderId: '881980158194',
+  appId: '1:881980158194:web:0cc9a535852a8a5d9d606b',
+  databaseURL: 'https://christmas-2025-76726-default-rtdb.firebaseio.com/',
 };
 
 const app = initializeApp(firebaseConfig);

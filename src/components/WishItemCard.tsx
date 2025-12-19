@@ -1,19 +1,23 @@
 import { useState } from 'react';
-import { Pencil, Trash2, Save, X, ExternalLink } from 'lucide-react';
+import { Pencil, Trash2, Save, X, ExternalLink, CheckCircle2 } from 'lucide-react';
 import type { WishItem } from '../types/wishItem';
 import Card from './Card';
 import { isSanta } from '../config/santa';
+import { useRecipientStatus } from '../hooks/useSantaTracking';
+import { toggleItemPurchased, getSantaUserId } from '../services/santaTracking';
 
 interface WishItemCardProps {
   item: WishItem;
   personId: string;
+  totalItems: number;
   onDelete: () => void;
   onEdit: (updatedItem: WishItem) => void;
 }
 
 export default function WishItemCard({
   item,
-  personId: _personId,
+  personId,
+  totalItems,
   onDelete,
   onEdit,
 }: WishItemCardProps) {
@@ -23,6 +27,10 @@ export default function WishItemCard({
   const [editPrice, setEditPrice] = useState(item.price || '');
   const [editNotes, setEditNotes] = useState(item.notes || '');
   const [editImage, setEditImage] = useState(item.image || '');
+  
+  const santaMode = isSanta();
+  const { status, isSantaMode: isSantaActive } = useRecipientStatus(personId);
+  const isPurchased = status?.purchasedItems?.includes(item.id) || false;
 
   const handleSave = () => {
     onEdit({
@@ -51,7 +59,16 @@ export default function WishItemCard({
     }
   };
 
-  const santaMode = isSanta();
+  const handleTogglePurchased = async () => {
+    if (!isSantaActive) return;
+    try {
+      const santaUserId = getSantaUserId();
+      await toggleItemPurchased(santaUserId, personId, item.id, totalItems);
+    } catch (error) {
+      console.error('Error toggling item purchased:', error);
+    }
+  };
+
   const displayLink = santaMode ? item.link : undefined;
 
   return (
@@ -159,9 +176,24 @@ export default function WishItemCard({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-100 mb-2">
-              {item.title}
-            </h3>
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h3 className={`font-bold text-base sm:text-lg text-gray-800 dark:text-gray-100 flex-1 ${isPurchased ? 'line-through opacity-60' : ''}`}>
+                {item.title}
+              </h3>
+              {isSantaActive && (
+                <button
+                  onClick={handleTogglePurchased}
+                  className={`flex-shrink-0 p-1.5 rounded-lg transition-all duration-200 ${
+                    isPurchased
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                  title={isPurchased ? 'Mark as not purchased' : 'I bought this'}
+                >
+                  <CheckCircle2 className={`w-5 h-5 ${isPurchased ? 'fill-current' : ''}`} />
+                </button>
+              )}
+            </div>
             {item.price && (
               <p className="text-green-600 dark:text-green-400 font-semibold mb-2 text-base sm:text-lg">
                 ${item.price}

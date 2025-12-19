@@ -203,6 +203,7 @@ export default function PersonPage() {
                     key={item.id}
                     item={item}
                     personId={person.id}
+                    totalItems={wishlistItems.length}
                     onDelete={() => handleDelete(item.id)}
                     onEdit={handleEdit}
                   />

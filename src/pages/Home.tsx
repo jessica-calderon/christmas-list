@@ -5,6 +5,7 @@ import { useChristmasStore } from '../store/useChristmasStore';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
 import Toast from '../components/Toast';
+import SantaDashboard from '../components/SantaDashboard';
 import { subscribeToWishlist } from '../services/wishlist';
 import { subscribeToPersons, addPerson, deletePerson, getCurrentUserId } from '../services/persons';
 import { isSanta } from '../config/santa';
@@ -201,6 +202,9 @@ export default function Home() {
             Choose a Family Member
           </p>
         </div>
+
+        {/* Santa Dashboard */}
+        <SantaDashboard people={people} />
 
         {/* Search and Add Person Section */}
         <div className="space-y-4">

@@ -1,0 +1,23 @@
+{
+  "rules": {
+    "persons": {
+      ".read": true,
+      ".write": true
+    },
+    "wishlists": {
+      ".read": true,
+      ".write": true
+    },
+    "santaTracking": {
+      "$santaUserId": {
+        ".read": "$santaUserId === auth.uid",
+        ".write": "$santaUserId === auth.uid",
+        "$recipientUserId": {
+          ".read": "$santaUserId === auth.uid",
+          ".write": "$santaUserId === auth.uid"
+        }
+      }
+    }
+  }
+}
+
